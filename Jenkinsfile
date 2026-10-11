@@ -50,7 +50,7 @@ pipeline {
                     // If something already listens on the port, the new server would crash and the
                     // tests would silently run against that other process instead. Fail clearly.
                     shell "${venvPython()} -c \"import socket,sys; p=int(sys.argv[1]); s=socket.socket(); busy=s.connect_ex(('127.0.0.1',p))==0; print(f'Port {p} is already in use - stop that process or choose another APP_PORT.' if busy else f'Port {p} is free.'); sys.exit(1 if busy else 0)\" ${params.APP_PORT}"
-                    // Run node directly (same as `npm start`) so the saved PID is the server itself.
+                    // Run `node server.js` (what `npm start` runs) and save its PID (on Windows, its cmd wrapper).
                     // JENKINS_NODE_COOKIE/BUILD_ID stop Jenkins killing it when this step ends;
                     // the post block below stops it explicitly.
                     if (isUnix()) {
@@ -67,9 +67,10 @@ pipeline {
                             $env:JENKINS_NODE_COOKIE = 'dontKillMe'
                             $env:BUILD_ID = 'dontKillMe'
                             $env:PORT = $env:APP_PORT
-                            $p = Start-Process node -ArgumentList 'server.js' -WorkingDirectory dashboard `
-                                -RedirectStandardOutput reports/server.log -RedirectStandardError reports/server.err.log `
-                                -NoNewWindow -PassThru
+                            # No -NoNewWindow / -Redirect*: those make node inherit this step's output
+                            # handle and the step never finishes. cmd does the redirection instead.
+                            $p = Start-Process cmd.exe -WorkingDirectory dashboard -WindowStyle Hidden -PassThru `
+                                -ArgumentList '/c', 'node server.js > ..\\reports\\server.log 2> ..\\reports\\server.err.log'
                             $p.Id | Out-File -Encoding ascii app.pid
                         '''
                     }
@@ -114,7 +115,11 @@ pipeline {
                         sh 'kill "$(cat app.pid)" 2>/dev/null || true; rm -f app.pid'
                     } else {
                         powershell '''
-                            Stop-Process -Id ([int](Get-Content app.pid)) -Force -ErrorAction SilentlyContinue
+                            # app.pid is the cmd wrapper; stop its node child first, then cmd.
+                            $appPid = [int](Get-Content app.pid)
+                            Get-CimInstance Win32_Process -Filter "ParentProcessId=$appPid" |
+                                ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+                            Stop-Process -Id $appPid -Force -ErrorAction SilentlyContinue
                             Remove-Item app.pid -ErrorAction SilentlyContinue
                         '''
                     }
