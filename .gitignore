@@ -1,3 +1,6 @@
+# Dependencies
+node_modules/
+
 # Credentials -- never commit
 SolarSense/secrets.h
 
@@ -14,3 +17,10 @@ build/
 *.bin
 *.elf
 *.map
+
+# Python test environment and reports
+.venv/
+__pycache__/
+.pytest_cache/
+reports/
+app.pid
