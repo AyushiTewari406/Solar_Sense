@@ -6,6 +6,11 @@
 
 def shell(String cmd) { if (isUnix()) { sh cmd } else { bat cmd } }
 def venvPython() { return isUnix() ? '.venv/bin/python' : '.venv\\Scripts\\python.exe' }
+def printServerLogs() {
+    ['reports/server.log', 'reports/server.err.log'].each { f ->
+        if (fileExists(f)) { echo "----- ${f} -----\n${readFile(f)}" }
+    }
+}
 
 pipeline {
     agent any
@@ -18,7 +23,7 @@ pipeline {
     parameters {
         booleanParam(name: 'START_APP', defaultValue: true, description: 'Start dashboard/server.js on this agent. Untick to test an already-running instance at SOLARSENSE_URL.')
         string(name: 'APP_PORT', defaultValue: '3000', description: 'Port for the local server (used when START_APP is ticked)')
-        string(name: 'SOLARSENSE_URL', defaultValue: '', description: 'Target URL when START_APP is unticked, e.g. http://my-host:3000')
+        string(name: 'SOLARSENSE_URL', defaultValue: '', description: 'Target URL when START_APP is unticked, e.g. http://my-host:3000. If Jenkins runs in Docker and the app runs on the Docker host, use http://host.docker.internal:3000. (With START_APP ticked the app runs next to the tests, so localhost is correct.)')
         choice(name: 'SELENIUM_BROWSER', choices: ['chrome', 'edge'], description: 'Browser for the functional test')
         string(name: 'PERF_CONCURRENCY', defaultValue: '5', description: 'Concurrent workers (1-50)')
         string(name: 'PERF_REQUESTS', defaultValue: '100', description: 'Requests per endpoint (1-2000)')
@@ -36,6 +41,8 @@ pipeline {
     stages {
         stage('Install dependencies') {
             steps {
+                // The workspace is reused between builds; stale JUnit files must not be republished.
+                dir('reports') { deleteDir() }
                 dir('dashboard') { shell 'npm ci --no-audit --no-fund' }
                 shell "${isUnix() ? 'python3' : 'python'} -m venv .venv"
                 shell "${venvPython()} -m pip install -r tests/requirements.txt"
@@ -82,8 +89,15 @@ pipeline {
             steps {
                 script {
                     if (!env.SOLARSENSE_URL?.trim()) { error 'Set SOLARSENSE_URL when START_APP is unticked.' }
+                    // --pid-file makes the wait fail at once if the server we started crashes.
+                    def watchPid = (params.START_APP && fileExists('app.pid')) ? ' --pid-file app.pid' : ''
+                    try {
+                        shell "${venvPython()} tests/wait_for_app.py ${env.SOLARSENSE_URL} 60${watchPid}"
+                    } catch (err) {
+                        printServerLogs()
+                        error "SolarSense never became reachable at ${env.SOLARSENSE_URL}; tests were not run. Server logs are printed above."
+                    }
                 }
-                shell "${venvPython()} tests/wait_for_app.py ${env.SOLARSENSE_URL} 60"
             }
         }
 
@@ -125,6 +139,10 @@ pipeline {
                     }
                 }
             }
+        }
+        unstable {
+            // Tests ran but some failed: the server's own output often explains why.
+            script { printServerLogs() }
         }
     }
 }
