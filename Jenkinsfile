@@ -47,6 +47,9 @@ pipeline {
             steps {
                 script {
                     env.SOLARSENSE_URL = "http://localhost:${params.APP_PORT}"
+                    // If something already listens on the port, the new server would crash and the
+                    // tests would silently run against that other process instead. Fail clearly.
+                    shell "${venvPython()} -c \"import socket,sys; p=int(sys.argv[1]); s=socket.socket(); busy=s.connect_ex(('127.0.0.1',p))==0; print(f'Port {p} is already in use - stop that process or choose another APP_PORT.' if busy else f'Port {p} is free.'); sys.exit(1 if busy else 0)\" ${params.APP_PORT}"
                     // Run node directly (same as `npm start`) so the saved PID is the server itself.
                     // JENKINS_NODE_COOKIE/BUILD_ID stop Jenkins killing it when this step ends;
                     // the post block below stops it explicitly.
