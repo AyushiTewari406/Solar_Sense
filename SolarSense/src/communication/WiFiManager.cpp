@@ -4,7 +4,7 @@
 #include <time.h>
 
 static const unsigned long kReconnectBackoffMs = 15000;
-static const time_t kPlausibleEpoch = 1672531200;  // 2023-01-01
+static const time_t kPlausibleEpoch = 1672531200;
 
 bool WiFiLink::begin(const char* ssid, const char* password,
                      unsigned long timeout_ms) {
@@ -20,7 +20,7 @@ bool WiFiLink::begin(const char* ssid, const char* password,
 
   unsigned long start = millis();
   while (WiFi.status() != WL_CONNECTED && (millis() - start) < timeout_ms) {
-    delay(250);  // setup() only; loop() never waits on WiFi
+    delay(250);
     Serial.print('.');
   }
   Serial.println();
@@ -55,7 +55,6 @@ void WiFiLink::loop() {
   if (now - last_reconnect_attempt_ms_ < kReconnectBackoffMs) return;
   last_reconnect_attempt_ms_ = now;
 
-  // Fire and forget. The result is picked up on a later loop() call.
   WiFi.disconnect();
   WiFi.begin(ssid_, password_);
 }
@@ -72,7 +71,7 @@ bool WiFiLink::syncTime(const char* ntp_server, long tz_offset_sec,
       time_synced_ = true;
       return true;
     }
-    delay(200);  // setup() only
+    delay(200);
   }
   return false;
 }

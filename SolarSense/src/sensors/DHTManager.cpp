@@ -6,8 +6,6 @@ bool DHTManager::begin(uint8_t pin, uint8_t type) {
   if (dev_ == nullptr) dev_ = new DHT(pin, type);
   dev_->begin();
 
-  // The DHT library has no probe call, so presence is decided by whether a
-  // first read succeeds. A cold sensor needs a moment before it will answer.
   delay(1200);
   float t = dev_->readTemperature();
   available_ = !isnan(t);

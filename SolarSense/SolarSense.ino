@@ -1,15 +1,3 @@
-// SolarSense -- ESP32 data-acquisition firmware.
-//
-// Reads three solar panels (clean reference / never cleaned / weekly cleaned)
-// plus environmental context, derives relative power loss, logs locally, and
-// POSTs a structured record to the backend.
-//
-// Nothing here decides whether a panel should be cleaned. That is the backend
-// and AI layer's job; this firmware's contract is to deliver honest,
-// well-labelled measurements to it.
-//
-// Wiring, libraries, and testing steps: see README.md.
-
 #include <Wire.h>
 
 #include "config.h"
@@ -31,9 +19,6 @@
 #include "src/util/Interval.h"
 #include "src/util/Simulation.h"
 
-// ---------------------------------------------------------------------------
-// Modules
-// ---------------------------------------------------------------------------
 static BH1750Sensor g_light;
 static INA219Panel g_panelA("Panel A");
 static INA219Panel g_panelB("Panel B");
@@ -61,9 +46,6 @@ static Interval g_sdlog_tick(SD_LOG_INTERVAL_MS);
 static Interval g_upload_tick(UPLOAD_INTERVAL_MS);
 static Interval g_wifi_tick(WIFI_CHECK_INTERVAL_MS);
 
-// ---------------------------------------------------------------------------
-// Forward declarations
-// ---------------------------------------------------------------------------
 static TwoWire* busFor(int selector);
 static void initSensors();
 static void initNetwork();
@@ -76,12 +58,9 @@ static void printJson(const SensorData& d);
 static void printCsv(const SensorData& d);
 static void printOneWireRoms();
 
-// ---------------------------------------------------------------------------
-// Setup
-// ---------------------------------------------------------------------------
 void setup() {
   Serial.begin(SERIAL_BAUD);
-  delay(300);  // let the USB serial port enumerate before the banner
+  delay(300);
 
   Dashboard::printBanner(Serial, FIRMWARE_VERSION, DEVICE_ID);
 
@@ -125,9 +104,6 @@ void setup() {
   Dashboard::printHelp(Serial);
 }
 
-// ---------------------------------------------------------------------------
-// Loop -- every branch is millis()-gated; nothing blocks on anything.
-// ---------------------------------------------------------------------------
 void loop() {
   while (Serial.available() > 0) {
     handleSerialCommand((char)Serial.read());
@@ -148,8 +124,6 @@ void loop() {
     Dashboard::print(Serial, g_latest, g_status, g_demo_view);
   }
 
-  // After the dashboard, so a Serial-echoed CSV row does not land in the
-  // middle of it when the microSD is absent.
   if (g_sdlog_tick.due()) {
     logRecord(g_latest);
   }
@@ -159,9 +133,6 @@ void loop() {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Initialisation
-// ---------------------------------------------------------------------------
 static TwoWire* busFor(int selector) {
   return selector == BUS_WIRE1 ? &Wire1 : &Wire;
 }
@@ -204,7 +175,6 @@ static void initSensors() {
   g_status.ds18b20_mapping_explicit = g_temps.mappingExplicit();
   if (g_status.ds18b20_count > 0) {
     printOneWireRoms();
-    // Kick the first conversion; results are collected on the next cycle.
     g_temps.requestAll();
   }
 #endif
@@ -241,8 +211,6 @@ static void initNetwork() {
                         5000)) {
       g_rtc.markNtpSynced();
       Serial.println("Clock synchronised over NTP.");
-      // If the DS3231 is present but was never set, seed it now so the next
-      // power cut does not lose the clock.
       if (g_rtc.available() && g_rtc.lostPower() && g_rtc.syncRtcFromSystem()) {
         g_status.rtc_lost_power = false;
         Serial.println("DS3231 set from NTP time.");
@@ -267,9 +235,6 @@ static void initNetwork() {
   g_status.time_source = src;
 }
 
-// ---------------------------------------------------------------------------
-// Acquisition
-// ---------------------------------------------------------------------------
 static void acquire() {
   SensorData d;
   d.seq = ++g_seq;
@@ -284,8 +249,6 @@ static void acquire() {
 
 #if ENABLE_DS18B20
   if (g_temps.available()) {
-    // Reads the conversion requested at the end of the previous cycle, so no
-    // 375 ms wait ever lands inside loop().
     d.panelA.temperature_status = g_temps.read(0, d.panelA.temperature);
     d.panelB.temperature_status = g_temps.read(1, d.panelB.temperature);
     d.panelC.temperature_status = g_temps.read(2, d.panelC.temperature);
@@ -318,11 +281,8 @@ static void acquire() {
   g_status.free_heap = ESP.getFreeHeap();
 }
 
-// ---------------------------------------------------------------------------
-// Logging
-// ---------------------------------------------------------------------------
 static void logRecord(const SensorData& d) {
-  if (d.seq == 0) return;  // nothing acquired yet
+  if (d.seq == 0) return;
 
   if (g_sd.available()) {
     if (g_sd.logRecord(d)) {
@@ -340,9 +300,6 @@ static void logRecord(const SensorData& d) {
 #endif
 }
 
-// ---------------------------------------------------------------------------
-// Backend upload
-// ---------------------------------------------------------------------------
 static void attemptUpload() {
   if (g_latest.seq == 0) return;
 
@@ -380,8 +337,6 @@ static void attemptUpload() {
 }
 
 static void drainBacklog() {
-  // Oldest first, a few per cycle, so a long outage does not turn into one
-  // enormous burst the moment the link returns.
   for (int i = 0; i < UPLOAD_BACKLOG_PER_CYCLE && !g_pending.empty(); i++) {
     SensorData old;
     if (!g_pending.peek(old)) break;
@@ -391,9 +346,6 @@ static void drainBacklog() {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Serial commands
-// ---------------------------------------------------------------------------
 static void printJson(const SensorData& d) {
   static char json[1400];
   size_t n = g_backend.buildJson(d, json, sizeof(json));
@@ -478,6 +430,6 @@ static void handleSerialCommand(char c) {
       Dashboard::printInitReport(Serial, g_status);
       break;
     default:
-      break;  // ignore newlines and stray characters
+      break;
   }
 }

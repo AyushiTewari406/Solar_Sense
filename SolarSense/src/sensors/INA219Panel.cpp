@@ -47,8 +47,6 @@ SensorStatus INA219Panel::read(PanelReading& out) {
     out.status = SensorStatus::NotPresent;
     return out.status;
   }
-  // Re-probe every cycle: a board that falls off the breadboard mid-run
-  // otherwise keeps returning stale-looking zeros.
   if (!probe()) {
     out.status = SensorStatus::ReadError;
     return out.status;
@@ -63,8 +61,6 @@ SensorStatus INA219Panel::read(PanelReading& out) {
     return out.status;
   }
 
-  // High-side sensing: the panel terminal sits above the load by the shunt
-  // drop, so the panel's own voltage is bus + shunt.
   out.voltage = bus_v + (shunt_mv / 1000.0f);
   out.current = current_ma / 1000.0f;
   out.status = SensorStatus::Ok;

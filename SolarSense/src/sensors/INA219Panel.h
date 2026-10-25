@@ -1,9 +1,3 @@
-// One INA219 current/voltage monitor, bound to one panel.
-//
-// Each instance carries its own TwoWire* and address, which is what lets the
-// same class serve Panel A on Wire@0x40 and Panel B on Wire1@0x40 today, and
-// all three on one bus at 0x40/0x41/0x44 once the address pads are bridged.
-// Nothing outside config.h needs to change for that migration.
 #pragma once
 
 #include <Adafruit_INA219.h>
@@ -19,18 +13,13 @@ class INA219Panel {
   explicit INA219Panel(const char* name) : name_(name) {}
   ~INA219Panel();
 
-  // Probes the address first, so a missing board reports NotPresent rather
-  // than failing somewhere deeper.
   bool begin(TwoWire* bus, uint8_t address, Range range);
 
   bool available() const { return available_; }
   const char* name() const { return name_; }
   uint8_t address() const { return address_; }
-  // "Wire" or "Wire1", for the boot report.
   const char* busName() const;
 
-  // Fills voltage/current/power-inputs on the reading and returns the status
-  // it stored there.
   SensorStatus read(PanelReading& out);
 
  private:

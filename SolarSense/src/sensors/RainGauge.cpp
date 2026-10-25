@@ -5,8 +5,6 @@
 static volatile uint32_t g_tips = 0;
 static volatile unsigned long g_last_tip_ms = 0;
 
-// Reed switches bounce for several milliseconds per tip; without this filter
-// one tip is counted many times and the rainfall total is fiction.
 static const unsigned long kDebounceMs = 120;
 
 static void IRAM_ATTR onTip() {

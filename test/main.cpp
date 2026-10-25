@@ -1,6 +1,3 @@
-// Host harness: exercises the SolarSense logic modules without hardware.
-// Verifies the comparison guards, the JSON contract, the CSV contract, the
-// dashboard rendering, and the upload ring buffer.
 #include <Arduino.h>
 #include <SD.h>
 #include <WiFi.h>
@@ -30,12 +27,11 @@ static DataProcessor makeProcessor() {
   return DataProcessor(cfg);
 }
 
-// The hardware that actually exists today: BH1750, INA219 A, INA219 B.
 static SensorData currentHardwareRecord() {
   SensorData d;
   d.seq = 42;
   d.uptime_ms = 3615000UL;
-  d.timestamp = 1787241615;  // 2026-08-20 21:30:15 IST (UTC+5:30)
+  d.timestamp = 1787241615;
   d.time_source = TimeSource::Ntp;
 
   d.light_lux = 82450.0f;
@@ -48,7 +44,6 @@ static SensorData currentHardwareRecord() {
   d.panelB.voltage = 17.91f;
   d.panelB.current = 0.910f;
   d.panelB.status = SensorStatus::Ok;
-  // Panel C, all temperatures, DHT22, rain gauge: absent.
   return d;
 }
 
@@ -99,19 +94,16 @@ int main() {
 
   printf("\n########## 6. ASSERTIONS ##########\n");
 
-  // Power = V * I
   check("panelA power = 18.42 * 1.240 = 22.84 W",
         fabs(d.panelA.power - 22.8408f) < 0.001f);
   check("panelB power = 17.91 * 0.910 = 16.30 W",
         fabs(d.panelB.power - 16.2981f) < 0.001f);
   check("panelC power stays NAN when the sensor is absent", isnan(d.panelC.power));
 
-  // Loss maths
   check("loss B is ~28.65%", fabs(d.loss_B_pct - 28.6493f) < 0.01f);
   check("loss C stays NAN with panel C absent", isnan(d.loss_C_pct));
   check("comparison is valid in full sun", d.comparison_valid);
 
-  // JSON contract
   check("JSON fits the buffer", n > 0 && n < sizeof(json));
   check("absent panel C serialises as null, not 0",
         strstr(json, "\"panelC\":{\"voltage\":null,\"current\":null,\"power\":null") != NULL);
@@ -123,11 +115,9 @@ int main() {
   check("device_id present", strstr(json, "\"device_id\":\"SOLARSENSE_01\"") != NULL);
   check("ISO timestamp present", strstr(json, "T21:30:15") != NULL);
 
-  // CSV contract: absent values are empty fields, not zeros.
   check("CSV panelC columns are empty, not 0",
         strstr(row, ",,,,NOT CONNECTED,") != NULL);
 
-  // Guard: low light must suppress the soiling figure.
   SensorData dim = currentHardwareRecord();
   dim.light_lux = 4200.0f;
   proc.process(dim);
@@ -138,7 +128,6 @@ int main() {
   check("power is still computed under low light",
         !isnan(dim.panelA.power) && !isnan(dim.panelB.power));
 
-  // Guard: division by zero on the reference panel.
   SensorData dark = currentHardwareRecord();
   dark.panelA.current = 0.0f;
   proc.process(dark);
@@ -147,7 +136,6 @@ int main() {
   check("zero reference power is a real 0.0 W reading, not NAN",
         dark.panelA.power == 0.0f);
 
-  // Guard: reference panel missing entirely.
   SensorData noref = currentHardwareRecord();
   noref.panelA.status = SensorStatus::NotPresent;
   noref.panelA.voltage = NAN;
@@ -157,15 +145,12 @@ int main() {
         !noref.comparison_valid &&
             strstr(noref.comparison_note, "reference panel A unavailable") != NULL);
 
-  // Guard: light sensor failure.
   SensorData nolight = currentHardwareRecord();
   nolight.light_status = SensorStatus::ReadError;
   nolight.light_lux = NAN;
   proc.process(nolight);
   check("no light reading blocks the comparison", !nolight.comparison_valid);
 
-  // Saturated light still counts as a usable high-irradiance signal? No --
-  // Saturated is not "usable", so the comparison is withheld.
   SensorData sat = currentHardwareRecord();
   sat.light_status = SensorStatus::Saturated;
   sat.light_lux = 121556.0f;
@@ -173,7 +158,6 @@ int main() {
   check("saturated light reading withholds the comparison",
         !sat.comparison_valid);
 
-  // Ring buffer
   RecordBuffer<3> buf;
   SensorData a = d, b = d, c = d, e = d;
   a.seq = 1; b.seq = 2; c.seq = 3; e.seq = 4;

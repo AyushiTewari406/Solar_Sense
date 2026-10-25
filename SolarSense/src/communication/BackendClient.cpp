@@ -19,8 +19,6 @@ const char* backendResultName(BackendResult r) {
 
 namespace {
 
-// Bounded string builder. Every write is clamped to the buffer and an
-// overflow is remembered, so a truncated payload is never sent as if whole.
 struct Appender {
   char* buf;
   size_t cap;
@@ -48,8 +46,6 @@ struct Appender {
   }
 };
 
-// A measurement that does not exist is JSON null, never 0. The backend must
-// be able to tell "sensor absent" from "panel produced nothing".
 void addNumber(Appender& a, const char* key, float value, int decimals) {
   if (isnan(value)) {
     a.addf("\"%s\":null", key);
@@ -73,7 +69,7 @@ void addPanel(Appender& a, const char* key, const PanelReading& p) {
   a.addf("}");
 }
 
-}  // namespace
+}
 
 void BackendClient::begin(const char* url, const char* device_id,
                           const char* api_key, const char* firmware_version,
@@ -121,8 +117,6 @@ size_t BackendClient::buildJson(const SensorData& d, char* out,
   a.addf(",\"status\":\"%s\"", sensorStatusName(d.ambient_status));
   a.addf("}");
 
-  // Derived on-device so the dashboard and the serial demo cannot disagree,
-  // and flagged invalid rather than omitted when the guards refuse it.
   a.addf(",\"comparison\":{\"valid\":%s", d.comparison_valid ? "true" : "false");
   a.addf(",\"note\":\"%s\"", d.comparison_note);
   a.addf(",");

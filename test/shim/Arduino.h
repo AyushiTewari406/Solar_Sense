@@ -1,4 +1,3 @@
-// Host-side shim: just enough Arduino to compile the SolarSense modules.
 #pragma once
 #include <stdint.h>
 #include <stdio.h>

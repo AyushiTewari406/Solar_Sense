@@ -1,9 +1,3 @@
-// Fixed-size RAM ring of records waiting to reach the backend.
-//
-// Nothing here is dynamic: the buffer is sized at compile time so an outage
-// cannot fragment the heap on a device meant to run for weeks. When it fills,
-// the oldest record is dropped and counted -- a silent drop would look like
-// clean data with a hole in it.
 #pragma once
 
 #include <Arduino.h>
@@ -22,14 +16,13 @@ class RecordBuffer {
     items_[head_] = d;
     head_ = (head_ + 1) % N;
     if (count_ == N) {
-      tail_ = (tail_ + 1) % N;  // overwrote the oldest
+      tail_ = (tail_ + 1) % N;
       dropped_++;
     } else {
       count_++;
     }
   }
 
-  // Oldest first: a backlog should reach the database in the order it happened.
   bool peek(SensorData& out) const {
     if (count_ == 0) return false;
     out = items_[tail_];

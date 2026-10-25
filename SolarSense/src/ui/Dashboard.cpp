@@ -10,8 +10,6 @@ void row(Stream& out, const char* label, const char* value) {
   out.printf("%-16s: %s\n", label, value);
 }
 
-// One place decides how a measurement looks, so "---" always means absent and
-// a number on screen always means a real reading.
 void valueText(char* buf, size_t cap, float v, SensorStatus st,
                const char* unit, int decimals) {
   switch (st) {
@@ -126,9 +124,6 @@ void printFull(Stream& out, const SensorData& d, const SystemStatus& s) {
   out.println();
   out.println("COMPARISON");
   if (!d.comparison_valid) {
-    // The number is withheld and the reason is shown. Reporting a soiling
-    // loss here would be attributing to dust what the guards could not rule
-    // out as cloud, low output, or a missing sensor.
     row(out, "Status", "NOT COMPUTED");
     row(out, "Reason", d.comparison_note);
   } else {
@@ -214,7 +209,7 @@ void printDemo(Stream& out, const SensorData& d, const SystemStatus& s) {
   out.println(kRule);
 }
 
-}  // namespace
+}
 
 void Dashboard::printBanner(Stream& out, const char* firmware,
                             const char* device_id) {

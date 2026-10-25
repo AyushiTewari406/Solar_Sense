@@ -1,9 +1,3 @@
-// SolarSense dashboard CI: Selenium functional test + HTTP performance test.
-//
-// Agent requirements: Node.js 18+, Python 3.9+, Google Chrome (or Edge), and
-// internet access (npm/pip registries, the dashboard's CDN scripts, and
-// Selenium Manager's driver download). Works on Linux and Windows agents.
-
 def shell(String cmd) { if (isUnix()) { sh cmd } else { bat cmd } }
 def venvPython() { return isUnix() ? '.venv/bin/python' : '.venv\\Scripts\\python.exe' }
 
@@ -47,9 +41,6 @@ pipeline {
             steps {
                 script {
                     env.SOLARSENSE_URL = "http://localhost:${params.APP_PORT}"
-                    // Run node directly (same as `npm start`) so the saved PID is the server itself.
-                    // JENKINS_NODE_COOKIE/BUILD_ID stop Jenkins killing it when this step ends;
-                    // the post block below stops it explicitly.
                     if (isUnix()) {
                         sh '''
                             mkdir -p reports
@@ -85,7 +76,6 @@ pipeline {
 
         stage('Functional test (Selenium)') {
             steps {
-                // A failing test marks the build UNSTABLE but still lets the performance test run.
                 catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
                     shell "${venvPython()} -m pytest tests/functional -v --junitxml=reports/junit-functional.xml"
                 }

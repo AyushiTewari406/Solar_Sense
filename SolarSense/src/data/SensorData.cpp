@@ -43,8 +43,6 @@ void formatTimestamp(const SensorData& d, char* out, size_t cap) {
 
 void formatTimestampIso(const SensorData& d, char* out, size_t cap) {
   if (d.time_source == TimeSource::Uptime || d.timestamp == 0) {
-    // No wall clock. Emit uptime seconds so the backend can still order
-    // records, clearly not an ISO date so it cannot be mistaken for one.
     snprintf(out, cap, "uptime:%lu", d.uptime_ms / 1000UL);
     return;
   }

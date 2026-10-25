@@ -1,29 +1,3 @@
-"""Non-functional test: HTTP response time of the SolarSense dashboard server.
-
-Sends a modest, bounded number of concurrent GET requests to read-only
-endpoints of dashboard/server.js and checks the success rate plus average,
-max and 95th-percentile response time against configurable thresholds.
-
-What this measures: the time from sending an HTTP request until the full
-response body has been received by `requests`, over the local network stack.
-
-What it does NOT measure: browser rendering, JavaScript execution, CDN
-downloads (Tailwind / Chart.js / Lucide), chart drawing, or real sensor
-latency. The server simulates telemetry in-process, so ESP32 -> Wi-Fi ->
-backend delay is not part of these numbers at all.
-
-Configuration (environment variables):
-  SOLARSENSE_URL         Base URL (default http://localhost:3000)
-  PERF_CONCURRENCY       Concurrent worker threads (default 5, hard cap 50)
-  PERF_REQUESTS          Requests per endpoint (default 100, hard cap 2000)
-  PERF_ENDPOINTS         Comma-separated paths (default "/,/api/sensors/latest,/api/sensors/history")
-  PERF_TIMEOUT_S         Per-request timeout in seconds (default 10)
-  PERF_MAX_AVG_MS        Threshold for average response time (default 200)
-  PERF_MAX_P95_MS        Threshold for 95th percentile (default 500)
-  PERF_MAX_MS            Threshold for slowest single request (default 2000)
-  PERF_MIN_SUCCESS_RATE  Minimum fraction of HTTP 2xx responses (default 0.99)
-"""
-
 import json
 import math
 import os
@@ -46,7 +20,6 @@ MAX_AVG_MS = float(os.environ.get("PERF_MAX_AVG_MS", "200"))
 MAX_P95_MS = float(os.environ.get("PERF_MAX_P95_MS", "500"))
 MAX_MS = float(os.environ.get("PERF_MAX_MS", "2000"))
 MIN_SUCCESS_RATE = float(os.environ.get("PERF_MIN_SUCCESS_RATE", "0.99"))
-# Only GET endpoints: POST /api/actuate/clean and /api/simulate/config change server state.
 ENDPOINTS = [p.strip() for p in os.environ.get(
     "PERF_ENDPOINTS", "/,/api/sensors/latest,/api/sensors/history").split(",") if p.strip()]
 
@@ -54,7 +27,6 @@ _thread_local = threading.local()
 
 
 def _session():
-    # requests.Session is not thread-safe; give each worker its own.
     if not hasattr(_thread_local, "session"):
         _thread_local.session = requests.Session()
     return _thread_local.session
@@ -64,14 +36,13 @@ def _timed_get(url):
     start = time.perf_counter()
     try:
         resp = _session().get(url, timeout=TIMEOUT_S)
-        _ = resp.content  # make sure the whole body is downloaded before stopping the clock
+        _ = resp.content
         return (time.perf_counter() - start) * 1000.0, resp.status_code, None
     except requests.RequestException as exc:
         return (time.perf_counter() - start) * 1000.0, None, type(exc).__name__
 
 
 def percentile(values, pct):
-    """Nearest-rank percentile (no interpolation)."""
     ordered = sorted(values)
     rank = max(1, math.ceil(pct / 100.0 * len(ordered)))
     return ordered[rank - 1]
@@ -126,7 +97,6 @@ def _guard_and_check_server(reports_dir):
 @pytest.mark.parametrize("path", ENDPOINTS)
 def test_endpoint_response_time(path, _guard_and_check_server, record_property):
     url = BASE_URL + path
-    # One warm-up request so connection setup / first-hit caching does not skew the max.
     _timed_get(url)
     stats = run_load(url, REQUESTS_PER_ENDPOINT, CONCURRENCY)
     _guard_and_check_server.append(stats)

@@ -1,5 +1,3 @@
-// Everything the dashboard needs to know about the machine, as opposed to
-// the measurements.
 #pragma once
 
 #include <Arduino.h>
@@ -8,7 +6,6 @@
 #include "SensorData.h"
 
 struct SystemStatus {
-  // Sensor availability, as decided at init and refreshed by each read.
   SensorStatus bh1750 = SensorStatus::NotPresent;
   SensorStatus ina_a  = SensorStatus::NotPresent;
   SensorStatus ina_b  = SensorStatus::NotPresent;

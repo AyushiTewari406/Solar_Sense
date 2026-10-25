@@ -26,12 +26,9 @@ void DataProcessor::process(SensorData& d) const {
     return;
   }
   if (d.panelA.power < cfg_.min_reference_power) {
-    // Also the division guard: everything below is safe because of this.
     d.comparison_note = "reference output too low to compare";
     return;
   }
-  // The light sensor's whole job. Two panels differing under a cloud says
-  // nothing about dust, so no loss figure is produced at all.
   if (!statusUsable(d.light_status) || isnan(d.light_lux)) {
     d.comparison_note = "no light reading - cannot separate cloud from soiling";
     return;

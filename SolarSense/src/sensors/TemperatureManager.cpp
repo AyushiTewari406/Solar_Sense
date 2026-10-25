@@ -12,7 +12,6 @@ static bool romIsZero(const uint8_t rom[8]) {
 bool TemperatureManager::begin(uint8_t pin, uint8_t resolution_bits) {
   wire_.begin(pin);
   sensors_.begin();
-  // Non-blocking conversions: request now, collect next cycle.
   sensors_.setWaitForConversion(false);
 
   uint8_t found = sensors_.getDeviceCount();

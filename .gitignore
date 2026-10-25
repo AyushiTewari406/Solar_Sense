@@ -1,26 +1,21 @@
-# Dependencies
 node_modules/
-
-# Credentials -- never commit
 SolarSense/secrets.h
-
-# Host test-harness build output
 test/*.exe
 test/*.o
-
-# PlatformIO
 .pio/
 .vscode/
-
-# Arduino build output
+.idea/
 build/
 *.bin
 *.elf
 *.map
-
-# Python test environment and reports
+*.hex
 .venv/
+venv/
 __pycache__/
+*.py[cod]
 .pytest_cache/
 reports/
 app.pid
+*.log
+.DS_Store

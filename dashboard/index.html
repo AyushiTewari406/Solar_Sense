@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SolarSense Precision AI — Solar Panel Soiling & Zone Cleaning Dashboard</title>
-  <!-- Tailwind CSS -->
+
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Chart.js -->
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Lucide Icons -->
+
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Font -->
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -48,7 +48,7 @@
     .card-shadow-lg {
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
     }
-    /* Pulsing animation */
+
     @keyframes pulse-ring {
       0% { transform: scale(0.95); opacity: 0.8; }
       50% { transform: scale(1.1); opacity: 1; }
@@ -61,10 +61,9 @@
 </head>
 <body class="font-sans antialiased bg-slate-50 text-slate-900 min-h-screen flex flex-col pb-12">
 
-  <!-- TOP NAVIGATION HEADER -->
   <header class="bg-white border-b border-slate-200 sticky top-0 z-50 card-shadow">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <!-- Brand & Title -->
+
       <div class="flex items-center space-x-3">
         <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-md shadow-amber-200">
           <i data-lucide="sun" class="w-6 h-6"></i>
@@ -78,9 +77,8 @@
         </div>
       </div>
 
-      <!-- Field Node Status Pills -->
       <div class="hidden md:flex items-center space-x-4">
-        <!-- Node Identity -->
+
         <div class="flex items-center space-x-2 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200 text-xs">
           <i data-lucide="cpu" class="w-4 h-4 text-slate-600"></i>
           <span class="font-mono font-semibold text-slate-700" id="headerNodeId">SOLARSENSE_01</span>
@@ -88,14 +86,12 @@
           <span class="text-emerald-700 font-medium">ONLINE</span>
         </div>
 
-        <!-- Clock & Uptime -->
         <div class="flex items-center space-x-2 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200 text-xs">
           <i data-lucide="clock" class="w-4 h-4 text-slate-600"></i>
           <span class="font-mono text-slate-700" id="headerTimestamp">--:--:--</span>
           <span class="text-xs font-semibold px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded" id="headerTimeSource">NTP</span>
         </div>
 
-        <!-- Sequence -->
         <div class="flex items-center space-x-1.5 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200 text-xs">
           <span class="text-slate-500">Seq:</span>
           <span class="font-mono font-bold text-slate-800" id="headerSeq">#0</span>
@@ -104,10 +100,8 @@
     </div>
   </header>
 
-  <!-- MAIN DASHBOARD CONTENT CONTAINER -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 flex-1 w-full space-y-6">
 
-    <!-- SIMULATION & TEST SCENARIO CONTROL BAR -->
     <div class="bg-white rounded-xl border border-slate-200 p-4 card-shadow flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center space-x-2">
         <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
@@ -141,9 +135,8 @@
       </div>
     </div>
 
-    <!-- METRICS TOP CARDS GRID (4 CARDS) -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-      <!-- 1. Light / Irradiance Card -->
+
       <div class="bg-white rounded-xl border border-slate-200 p-5 card-shadow flex flex-col justify-between">
         <div class="flex items-center justify-between">
           <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">BH1750 Irradiance</span>
@@ -162,7 +155,6 @@
         </div>
       </div>
 
-      <!-- 2. Clean Reference (Panel A) -->
       <div class="bg-white rounded-xl border border-slate-200 p-5 card-shadow flex flex-col justify-between">
         <div class="flex items-center justify-between">
           <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Panel A — Baseline</span>
@@ -184,7 +176,6 @@
         </div>
       </div>
 
-      <!-- 3. Natural Soiling (Panel B) -->
       <div class="bg-white rounded-xl border border-slate-200 p-5 card-shadow flex flex-col justify-between relative overflow-hidden">
         <div class="absolute top-0 right-0 w-1.5 h-full bg-red-500"></div>
         <div class="flex items-center justify-between">
@@ -207,7 +198,6 @@
         </div>
       </div>
 
-      <!-- 4. Status Quo (Panel C) -->
       <div class="bg-white rounded-xl border border-slate-200 p-5 card-shadow flex flex-col justify-between">
         <div class="flex items-center justify-between">
           <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Panel C — Weekly Schedule</span>
@@ -230,11 +220,9 @@
       </div>
     </div>
 
-    <!-- AI RECOMMENDATION & TARGETING MATRIX (HERO PANEL FROM PPT SLIDES 7 & 9) -->
     <div class="bg-white rounded-2xl border border-slate-200 card-shadow-lg p-6 overflow-hidden relative">
       <div class="flex flex-col lg:flex-row items-stretch justify-between gap-6">
 
-        <!-- Left: AI Decision & Action Recommendation -->
         <div class="lg:w-7/12 flex flex-col justify-between space-y-4">
           <div>
             <div class="flex items-center space-x-2 text-xs font-bold text-amber-600 uppercase tracking-wider mb-1">
@@ -247,7 +235,6 @@
             </p>
           </div>
 
-          <!-- Target Zone Highlight Box -->
           <div class="bg-slate-50 rounded-xl border border-slate-200 p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div class="space-y-1">
               <div class="flex items-center space-x-2">
@@ -260,14 +247,12 @@
               </div>
             </div>
 
-            <!-- Est Recovery -->
             <div class="text-left md:text-right">
               <span class="text-xs text-slate-500 font-medium block">Est. Power Recovery</span>
               <span class="text-lg font-extrabold text-emerald-600 font-mono" id="targetRecoveryText">+6.54 W (+28.6%)</span>
             </div>
           </div>
 
-          <!-- Actuation Trigger Button -->
           <div class="flex flex-wrap items-center gap-3 pt-2">
             <button onclick="actuateCleaning()" id="btnActuate" class="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold rounded-xl shadow-lg shadow-amber-200 flex items-center space-x-2 transition transform active:scale-95">
               <i data-lucide="bot" class="w-5 h-5"></i>
@@ -278,10 +263,14 @@
               <span class="w-2 h-2 rounded-full bg-slate-400" id="armStatusDot"></span>
               <span id="armStatusText">Robotic Arm Status: IDLE</span>
             </div>
+
+            <div class="flex items-center space-x-2 text-xs font-medium text-slate-600 bg-slate-100 px-3 py-2 rounded-lg border border-slate-200">
+              <span class="w-2 h-2 rounded-full bg-slate-400" id="armLinkDot"></span>
+              <span id="armLinkText">Arm Link: checking</span>
+            </div>
           </div>
         </div>
 
-        <!-- Right: Anomaly Classification Logic Tree (Slide 7 Matrix) -->
         <div class="lg:w-5/12 bg-slate-50 rounded-xl border border-slate-200 p-5 flex flex-col justify-between space-y-3">
           <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center justify-between">
             <span>Anomaly Decision Tree Matrix</span>
@@ -289,7 +278,7 @@
           </h3>
 
           <div class="space-y-2 text-xs">
-            <!-- Check 1: Sunlight -->
+
             <div class="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200" id="ruleSunlight">
               <div class="flex items-center space-x-2">
                 <i data-lucide="sun" class="w-4 h-4 text-amber-500"></i>
@@ -298,7 +287,6 @@
               <span class="font-mono font-semibold text-emerald-600" id="ruleSunlightVal">PASSED (84.5k Lux)</span>
             </div>
 
-            <!-- Check 2: Thermal Loss -->
             <div class="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200" id="ruleThermal">
               <div class="flex items-center space-x-2">
                 <i data-lucide="thermometer" class="w-4 h-4 text-blue-500"></i>
@@ -307,7 +295,6 @@
               <span class="font-mono font-semibold text-emerald-600" id="ruleThermalVal">NORMAL (29.1°C)</span>
             </div>
 
-            <!-- Check 3: Persistence -->
             <div class="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200" id="rulePersistence">
               <div class="flex items-center space-x-2">
                 <i data-lucide="repeat" class="w-4 h-4 text-indigo-500"></i>
@@ -316,7 +303,6 @@
               <span class="font-mono font-semibold text-emerald-600" id="rulePersistenceVal">4 Cycles Confirmed</span>
             </div>
 
-            <!-- Check 4: RCI Rain Forecast -->
             <div class="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200" id="ruleRCI">
               <div class="flex items-center space-x-2">
                 <i data-lucide="cloud-rain" class="w-4 h-4 text-blue-500"></i>
@@ -334,9 +320,8 @@
       </div>
     </div>
 
-    <!-- SPATIAL LOCALIZATION & ROBOTIC ARM CANVAS VISUALIZER -->
     <div class="bg-white rounded-2xl border border-slate-200 card-shadow overflow-hidden">
-      <!-- Section Tab Header -->
+
       <div class="border-b border-slate-200 px-6 py-4 flex flex-wrap items-center justify-between gap-3 bg-slate-50">
         <div class="flex items-center space-x-3">
           <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
@@ -348,7 +333,6 @@
           </div>
         </div>
 
-        <!-- Tab Controls -->
         <div class="flex items-center space-x-2 bg-slate-200 p-1 rounded-lg text-xs font-semibold">
           <button onclick="switchTab('grid')" id="tabBtnGrid" class="px-3 py-1.5 rounded-md bg-white text-slate-900 shadow-sm transition">
             Zone Grid Heatmap
@@ -359,21 +343,19 @@
         </div>
       </div>
 
-      <!-- Tab 1: Zone Grid Heatmap View -->
       <div id="tabContentGrid" class="p-6">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <!-- Panel A Grid -->
+
           <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50">
             <div class="flex items-center justify-between mb-3">
               <span class="text-xs font-bold text-slate-700 uppercase tracking-wide">Panel A (Clean Reference)</span>
               <span class="text-xs font-mono text-blue-600 font-semibold">0% Loss</span>
             </div>
             <div class="grid grid-cols-4 gap-2" id="gridPanelA">
-              <!-- Rendered via JS -->
+
             </div>
           </div>
 
-          <!-- Panel B Grid (Target) -->
           <div class="border-2 border-red-200 rounded-xl p-4 bg-red-50/30">
             <div class="flex items-center justify-between mb-3">
               <span class="text-xs font-bold text-slate-700 uppercase tracking-wide flex items-center gap-1">
@@ -382,23 +364,21 @@
               <span class="text-xs font-mono text-red-600 font-bold" id="gridPanelBLossHeader">-28.6% Loss</span>
             </div>
             <div class="grid grid-cols-4 gap-2" id="gridPanelB">
-              <!-- Rendered via JS -->
+
             </div>
           </div>
 
-          <!-- Panel C Grid -->
           <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50">
             <div class="flex items-center justify-between mb-3">
               <span class="text-xs font-bold text-slate-700 uppercase tracking-wide">Panel C (Weekly Cleaned)</span>
               <span class="text-xs font-mono text-amber-600 font-semibold" id="gridPanelCLossHeader">-12.8% Loss</span>
             </div>
             <div class="grid grid-cols-4 gap-2" id="gridPanelC">
-              <!-- Rendered via JS -->
+
             </div>
           </div>
         </div>
 
-        <!-- Selected Zone Details Inspector -->
         <div class="mt-6 p-4 bg-slate-100 rounded-xl border border-slate-200 flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-slate-700">
           <div class="flex items-center space-x-3">
             <span class="font-bold text-slate-900 font-sans text-sm">Zone Inspector:</span>
@@ -413,7 +393,6 @@
         </div>
       </div>
 
-      <!-- Tab 2: 2D Kinematic Canvas Visualizer -->
       <div id="tabContentCanvas" class="p-6 hidden flex flex-col items-center">
         <div class="w-full flex items-center justify-between mb-3 text-xs text-slate-500">
           <span>Physical Panel Coordinate Frame (1.6m × 1.0m per Panel Array)</span>
@@ -425,10 +404,8 @@
       </div>
     </div>
 
-    <!-- CHARTS GRID (2 COLUMNS) -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-      <!-- Chart 1: Real-Time Power Comparison -->
       <div class="bg-white rounded-2xl border border-slate-200 p-5 card-shadow space-y-3">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
           <div>
@@ -442,7 +419,6 @@
         </div>
       </div>
 
-      <!-- Chart 2: Irradiance vs Panel B Soiling Loss -->
       <div class="bg-white rounded-2xl border border-slate-200 p-5 card-shadow space-y-3">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
           <div>
@@ -458,7 +434,6 @@
 
     </div>
 
-    <!-- FULL SENSOR TELEMETRY LOG TABLE (ALIGNING WITH BACKEND_API.MD) -->
     <div class="bg-white rounded-2xl border border-slate-200 card-shadow overflow-hidden">
       <div class="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
         <div class="flex items-center space-x-2">
@@ -484,7 +459,7 @@
             </tr>
           </thead>
           <tbody id="telemetryTableBody" class="divide-y divide-slate-100 text-slate-700">
-            <!-- Rendered dynamically via JS -->
+
           </tbody>
         </table>
       </div>
@@ -492,7 +467,6 @@
 
   </main>
 
-  <!-- FOOTER -->
   <footer class="mt-12 border-t border-slate-200 bg-white py-6">
     <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 space-y-1">
       <p><strong>SolarSense Precision AI Architecture</strong> — Deterministic Spatial Localization & Autonomous Zone Cleaning Firmware/Backend Interface</p>
@@ -500,21 +474,18 @@
     </div>
   </footer>
 
-  <!-- SCRIPT & DASHBOARD LOGIC -->
   <script>
-    // Global state
+
     let latestData = null;
     let powerChart = null;
     let lossLuxChart = null;
     let selectedZone = null;
     let activeTab = 'grid';
 
-    // Initialize Lucide Icons
     lucide.createIcons();
 
-    // Chart.js Setup
     function initCharts() {
-      // 1. Power Chart
+
       const ctxPower = document.getElementById('chartPower').getContext('2d');
       powerChart = new Chart(ctxPower, {
         type: 'line',
@@ -560,7 +531,6 @@
         }
       });
 
-      // 2. Loss & Lux Chart
       const ctxLossLux = document.getElementById('chartLossLux').getContext('2d');
       lossLuxChart = new Chart(ctxLossLux, {
         type: 'line',
@@ -599,7 +569,6 @@
       });
     }
 
-    // Render 4x3 Zone Grid Heatmap
     function renderZoneGrids(data) {
       if (!data) return;
 
@@ -650,7 +619,6 @@
       document.getElementById('inspectStatus').textContent = z.status;
     }
 
-    // Fetch and update dashboard
     async function updateDashboard() {
       try {
         const [latestRes, historyRes] = await Promise.all([
@@ -661,13 +629,11 @@
         latestData = await latestRes.json();
         const historyData = await historyRes.json();
 
-        // 1. Header Updates
         document.getElementById('headerNodeId').textContent = latestData.device_id;
         document.getElementById('headerTimestamp').textContent = latestData.timestamp.split(' ')[1] || latestData.timestamp;
         document.getElementById('headerTimeSource').textContent = latestData.time_source;
         document.getElementById('headerSeq').textContent = `#${latestData.seq}`;
 
-        // 2. Metrics Cards
         document.getElementById('cardLuxValue').innerHTML = `${latestData.light_lux.toLocaleString()} <span class="text-base font-normal text-slate-500">Lux</span>`;
         document.getElementById('luxStatusText').textContent = latestData.light_status;
 
@@ -681,13 +647,11 @@
           document.getElementById('cardLuxNote').textContent = 'Sunlight suitable for soiling decision (>20,000 Lux)';
         }
 
-        // Panel A
         document.getElementById('cardPanelAPower').innerHTML = `${latestData.panelA.power.toFixed(2)} <span class="text-base font-normal text-slate-500">W</span>`;
         document.getElementById('cardPanelAVolts').textContent = `${latestData.panelA.voltage.toFixed(2)} V`;
         document.getElementById('cardPanelAAmps').textContent = `${latestData.panelA.current.toFixed(3)} A`;
         document.getElementById('cardPanelATemp').textContent = `${latestData.panelA.temperature} °C`;
 
-        // Panel B
         document.getElementById('cardPanelBPower').innerHTML = `${latestData.panelB.power.toFixed(2)} <span class="text-base font-normal text-slate-500">W</span>`;
         document.getElementById('cardPanelBVolts').textContent = `${latestData.panelB.voltage.toFixed(2)} V`;
         document.getElementById('cardPanelBAmps').textContent = `${latestData.panelB.current.toFixed(3)} A`;
@@ -698,7 +662,6 @@
           document.getElementById('cardPanelBEff').textContent = `${(latestData.comparison.efficiency_B * 100).toFixed(1)}%`;
         }
 
-        // Panel C
         document.getElementById('cardPanelCPower').innerHTML = `${latestData.panelC.power.toFixed(2)} <span class="text-base font-normal text-slate-500">W</span>`;
         document.getElementById('cardPanelCVolts').textContent = `${latestData.panelC.voltage.toFixed(2)} V`;
         document.getElementById('cardPanelCAmps').textContent = `${latestData.panelC.current.toFixed(3)} A`;
@@ -709,7 +672,6 @@
           document.getElementById('cardPanelCEff').textContent = `${(latestData.comparison.efficiency_C * 100).toFixed(1)}%`;
         }
 
-        // 3. AI Recommendation & Target Hero Section
         const rec = latestData.ai_decision.recommendation;
         const target = latestData.ai_decision.target_zone;
 
@@ -739,11 +701,9 @@
           document.getElementById('targetRecoveryText').textContent = `+${gainW} W (+${target.loss_pct}%)`;
         }
 
-        // Decision Tree Checks
         document.getElementById('ruleSunlightVal').textContent = latestData.light_lux >= 20000 ? `PASSED (${(latestData.light_lux/1000).toFixed(1)}k Lux)` : `FAILED (${(latestData.light_lux/1000).toFixed(1)}k Lux)`;
         document.getElementById('ruleRCIVal').textContent = `RCI ${latestData.ai_decision.rci_score.toFixed(2)}`;
 
-        // Robotic Arm Status Pill
         const arm = latestData.ai_decision.robotic_arm;
         document.getElementById('armStatusText').textContent = `Robotic Arm Status: ${arm.status}`;
         const dot = document.getElementById('armStatusDot');
@@ -753,10 +713,12 @@
         else if (arm.status === 'CLEANING') dot.className = 'w-2 h-2 rounded-full bg-blue-500 pulse-dot';
         else if (arm.status === 'VERIFYING') dot.className = 'w-2 h-2 rounded-full bg-emerald-500 pulse-dot';
 
-        // 4. Render Zone Grids
+        const linkUp = arm.link === 'CONNECTED';
+        document.getElementById('armLinkText').textContent = `Arm Link: ${linkUp ? 'CONNECTED' : 'OFFLINE (simulated)'}`;
+        document.getElementById('armLinkDot').className = linkUp ? 'w-2 h-2 rounded-full bg-emerald-500' : 'w-2 h-2 rounded-full bg-rose-400';
+
         renderZoneGrids(latestData);
 
-        // 5. Update Charts
         const labels = historyData.map(d => d.timestamp.split(' ')[1] || d.timestamp);
         const dataA = historyData.map(d => d.panelA.power);
         const dataB = historyData.map(d => d.panelB.power);
@@ -775,10 +737,8 @@
         lossLuxChart.data.datasets[1].data = dataLossB;
         lossLuxChart.update('none');
 
-        // 6. Update Telemetry Table
         renderTelemetryTable(historyData);
 
-        // 7. Draw Canvas if active
         if (activeTab === 'canvas') {
           drawKinematicCanvas(arm, target);
         }
@@ -788,7 +748,6 @@
       }
     }
 
-    // Render Telemetry Table
     function renderTelemetryTable(history) {
       const tbody = document.getElementById('telemetryTableBody');
       tbody.innerHTML = '';
@@ -817,18 +776,19 @@
       });
     }
 
-    // Trigger Robotic Arm Actuation
     async function actuateCleaning() {
       if (!latestData || !latestData.ai_decision.target_zone) return;
       const t = latestData.ai_decision.target_zone;
 
       document.getElementById('btnActuateText').textContent = 'ACTUATING ROBOTIC ARM...';
       try {
-        await fetch('/api/actuate/clean', {
+        const res = await fetch('/api/actuate/clean', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ panel: t.panel || 'panelB', zoneId: t.id, x: t.x, y: t.y })
         });
+        const out = await res.json();
+        if (out.mode) document.getElementById('btnActuateText').textContent = out.mode === 'ROBOTIC_ARM' ? 'ARM CLEANING ZONE ' + t.id : 'SIMULATED CLEAN ' + t.id;
         updateDashboard();
       } catch (e) {
         console.error('Actuation error:', e);
@@ -839,7 +799,6 @@
       }
     }
 
-    // Scenario Toggles
     async function toggleScenario(type) {
       let payload = {};
       if (type === 'normal') payload = { cloudShading: false, thermalLossMode: false, rainRate: 0.0, soilingLevelB: 0.286 };
@@ -865,7 +824,6 @@
       updateDashboard();
     }
 
-    // Switch Tab View
     function switchTab(tab) {
       activeTab = tab;
       if (tab === 'grid') {
@@ -882,18 +840,15 @@
       }
     }
 
-    // 2D Kinematic Robotic Arm Canvas Renderer
     function drawKinematicCanvas(arm, target) {
       const cvs = document.getElementById('armCanvas');
       const ctx = cvs.getContext('2d');
       const w = cvs.width;
       const h = cvs.height;
 
-      // Clear Canvas
       ctx.fillStyle = '#0f172a';
       ctx.fillRect(0, 0, w, h);
 
-      // Draw Grid lines
       ctx.strokeStyle = '#1e293b';
       ctx.lineWidth = 1;
       for (let x = 0; x < w; x += 40) {
@@ -903,30 +858,25 @@
         ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
       }
 
-      // Draw Panel Array Bounds (3 panels: Panel A, B, C)
       const panelW = 220;
       const panelH = 260;
       const startY = 70;
 
-      // Panel A
       ctx.fillStyle = '#1e3a8a';
       ctx.fillRect(40, startY, panelW, panelH);
       ctx.strokeStyle = '#3b82f6'; ctx.strokeRect(40, startY, panelW, panelH);
       ctx.fillStyle = '#93c5fd'; ctx.font = '12px Inter'; ctx.fillText('Panel A (Clean)', 50, startY + 20);
 
-      // Panel B (Target)
       ctx.fillStyle = '#7f1d1d';
       ctx.fillRect(290, startY, panelW, panelH);
       ctx.strokeStyle = '#ef4444'; ctx.strokeRect(290, startY, panelW, panelH);
       ctx.fillStyle = '#fca5a5'; ctx.fillText('Panel B (Target)', 300, startY + 20);
 
-      // Panel C
       ctx.fillStyle = '#78350f';
       ctx.fillRect(540, startY, panelW, panelH);
       ctx.strokeStyle = '#f59e0b'; ctx.strokeRect(540, startY, panelW, panelH);
       ctx.fillStyle = '#fde68a'; ctx.fillText('Panel C (Weekly)', 550, startY + 20);
 
-      // Highlight Target Zone (e.g. Zone Z03 in Panel B)
       if (target) {
         const targetX = 290 + (target.col - 1) * (panelW / 4) + (panelW / 8);
         const targetY = startY + (target.row - 1) * (panelH / 3) + (panelH / 6);
@@ -942,11 +892,9 @@
         ctx.fillStyle = '#fbbf24';
         ctx.fillText(`Target: ${target.id} (${target.x}m, ${target.y}m)`, targetX - 50, targetY - 25);
 
-        // Draw Robotic Arm Base & Joint Kinematics
         const armBaseX = 400;
         const armBaseY = 370;
 
-        // Animate Arm Position
         let endX = armBaseX;
         let endY = armBaseY - 100;
 
@@ -955,33 +903,28 @@
           endY = targetY;
         }
 
-        // Arm Link 1 & Link 2
         const jointX = (armBaseX + endX) / 2 - 30;
         const jointY = (armBaseY + endY) / 2 - 40;
 
-        // Draw Links
         ctx.strokeStyle = '#cbd5e1';
         ctx.lineWidth = 6;
         ctx.beginPath(); ctx.moveTo(armBaseX, armBaseY); ctx.lineTo(jointX, jointY); ctx.lineTo(endX, endY); ctx.stroke();
 
-        // Draw Joints
         ctx.fillStyle = '#f59e0b';
         ctx.beginPath(); ctx.arc(armBaseX, armBaseY, 10, 0, Math.PI * 2); ctx.fill();
         ctx.beginPath(); ctx.arc(jointX, jointY, 8, 0, Math.PI * 2); ctx.fill();
 
-        // End-effector Brush Head
         ctx.fillStyle = arm && arm.status === 'CLEANING' ? '#3b82f6' : '#ef4444';
         ctx.beginPath(); ctx.arc(endX, endY, 12, 0, Math.PI * 2); ctx.fill();
 
         if (arm && arm.status === 'CLEANING') {
-          // Spray effect
+
           ctx.fillStyle = 'rgba(59, 130, 246, 0.4)';
           ctx.beginPath(); ctx.arc(endX, endY, 25, 0, Math.PI * 2); ctx.fill();
         }
       }
     }
 
-    // Start auto polling (every 2.5s)
     initCharts();
     updateDashboard();
     setInterval(updateDashboard, 2500);

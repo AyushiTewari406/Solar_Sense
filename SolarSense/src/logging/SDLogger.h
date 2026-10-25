@@ -1,9 +1,3 @@
-// CSV logging to microSD, with the CSV format itself kept separate from the
-// card so it still works when the card is absent.
-//
-// The microSD module is NOT wired yet. buildCsvRow()/csvHeader() are static
-// and card-independent on purpose: today the sketch echoes those same rows to
-// Serial, and enabling the card later changes where they go, not what they are.
 #pragma once
 
 #include <Arduino.h>
@@ -18,12 +12,9 @@ class SDLogger {
   uint32_t rowsWritten() const { return rows_written_; }
   uint64_t cardSizeMB() const { return card_size_mb_; }
 
-  // Appends one row. Returns false if the card is absent or the write failed.
   bool logRecord(const SensorData& d);
 
-  // The CSV contract, usable without a card.
   static const char* csvHeader();
-  // Missing values are written as empty fields, never as 0.
   static size_t buildCsvRow(const SensorData& d, char* out, size_t cap);
 
  private:

@@ -1,9 +1,3 @@
-"""Block until the SolarSense dashboard server answers, or exit non-zero.
-
-Usage: python tests/wait_for_app.py [base_url] [timeout_seconds]
-Defaults: $SOLARSENSE_URL or http://localhost:3000, 60 seconds.
-"""
-
 import os
 import sys
 import time

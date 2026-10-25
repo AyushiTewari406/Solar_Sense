@@ -15,8 +15,6 @@ const char* SDLogger::csvHeader() {
 }
 
 namespace {
-// An absent measurement becomes an empty CSV field. Pandas reads that as NaN;
-// writing 0 there would quietly become a real data point.
 void fmtNum(char* out, size_t cap, float v, int decimals) {
   if (isnan(v)) {
     out[0] = '\0';
@@ -24,7 +22,7 @@ void fmtNum(char* out, size_t cap, float v, int decimals) {
     snprintf(out, cap, "%.*f", decimals, v);
   }
 }
-}  // namespace
+}
 
 size_t SDLogger::buildCsvRow(const SensorData& d, char* out, size_t cap) {
   char ts[32];
@@ -80,7 +78,6 @@ bool SDLogger::begin(uint8_t cs_pin, const char* path) {
   path_ = path;
   available_ = false;
 
-  // Uses the ESP32 default VSPI pins (SCK 18, MISO 19, MOSI 23).
   if (!SD.begin(cs_pin_)) return false;
   if (SD.cardType() == CARD_NONE) return false;
 

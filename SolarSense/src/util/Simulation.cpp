@@ -4,7 +4,6 @@
 
 namespace {
 
-// A slow swing so a demo looks alive rather than frozen. 120 s period.
 float wave(float centre, float amplitude, float phase) {
   float t = (float)(millis() % 120000UL) / 120000.0f;
   return centre + amplitude * sinf(2.0f * PI * t + phase);
@@ -17,7 +16,7 @@ void fillPanel(PanelReading& p, float voltage, float current) {
   p.status = SensorStatus::Simulated;
 }
 
-}  // namespace
+}
 
 void Simulation::fill(SensorData& d) {
   bool touched = false;
@@ -28,8 +27,6 @@ void Simulation::fill(SensorData& d) {
     touched = true;
   }
 
-  // Reference panel drives the other two, so the loss figures a demo shows
-  // stay internally consistent instead of drifting independently.
   float ref_v = wave(18.4f, 0.3f, 0.0f);
   float ref_i = wave(1.24f, 0.08f, 0.0f);
 
@@ -38,11 +35,11 @@ void Simulation::fill(SensorData& d) {
     touched = true;
   }
   if (d.panelB.status == SensorStatus::NotPresent) {
-    fillPanel(d.panelB, ref_v * 0.973f, ref_i * 0.741f);  // ~28% loss
+    fillPanel(d.panelB, ref_v * 0.973f, ref_i * 0.741f);
     touched = true;
   }
   if (d.panelC.status == SensorStatus::NotPresent) {
-    fillPanel(d.panelC, ref_v * 0.985f, ref_i * 0.870f);  // ~14% loss
+    fillPanel(d.panelC, ref_v * 0.985f, ref_i * 0.870f);
     touched = true;
   }
 
