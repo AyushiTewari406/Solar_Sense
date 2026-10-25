@@ -1,16 +1,5 @@
 # SolarSense
 
-Solar panel soiling monitor with a robotic cleaning arm.
-
-BCSE301L Software Engineering, VIT Chennai
-Guide: Lakshmi Harika Palivela
-
-| Name | Reg. No. |
-|---|---|
-| Ayushi Tewari | 24BRS1225 |
-| Sankala Nitheesh | 24BRS1067 |
-| Abhijith Prasanth | 24BRS1245 |
-
 ## What it does
 
 Dust on a solar panel cuts its output, but so do clouds and heat, so looking at
@@ -153,11 +142,3 @@ running dashboard. The same two suites run in Jenkins through the `Jenkinsfile`.
 | Arm | GET | /api/status | Joint angles, sonar distance, physics |
 
 Full payload format is in `docs/BACKEND_API.md`.
-
-## Known limitations
-
-- The dashboard backend still generates panel readings itself when the ESP32
-  is not posting, so it can be shown without the hardware.
-- The arm workspace is small (about 355 mm reach), so the cleaning sweep runs
-  over a scaled model of the panel, not a full size one.
-- Readings are kept in memory only, there is no database yet.
